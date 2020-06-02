@@ -120,7 +120,12 @@ resource "aws_elasticsearch_domain" "es" {
 
   log_publishing_options {
     cloudwatch_log_group_arn = aws_cloudwatch_log_group.this.arn
-    log_type                 = "SEARCH_SLOW_LOGS, ES_APPLICATION_LOGS"
+    log_type                 = "SEARCH_SLOW_LOGS"
+  }
+
+  log_publishing_options {
+    cloudwatch_log_group_arn = aws_cloudwatch_log_group.this.arn
+    log_type                 = "ES_APPLICATION_LOGS"
   }
 
   tags = {
