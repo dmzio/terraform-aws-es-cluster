@@ -123,7 +123,7 @@ variable "snapshot_start" {
 }
 
 variable "volume_size" {
-  default     = "35"
+  default     = "10"
   description = "Default size of the EBS volumes."
   type        = string
 }

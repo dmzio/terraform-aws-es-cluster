@@ -46,6 +46,34 @@ resource "aws_iam_service_linked_role" "default" {
   description      = "AWSServiceRoleForAmazonElasticsearchService Service-Linked Role"
 }
 
+resource "aws_cloudwatch_log_group" "this" {
+  name = var.name
+}
+
+resource "aws_cloudwatch_log_resource_policy" "this" {
+  policy_name = var.name
+
+  policy_document = <<CONFIG
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "es.amazonaws.com"
+      },
+      "Action": [
+        "logs:PutLogEvents",
+        "logs:PutLogEventsBatch",
+        "logs:CreateLogStream"
+      ],
+      "Resource": "arn:aws:logs:*"
+    }
+  ]
+}
+CONFIG
+}
+
 resource "aws_elasticsearch_domain" "es" {
   domain_name           = var.name
   elasticsearch_version = var.elasticsearch_version
@@ -88,6 +116,11 @@ resource "aws_elasticsearch_domain" "es" {
 
   snapshot_options {
     automated_snapshot_start_hour = var.snapshot_start
+  }
+
+  log_publishing_options {
+    cloudwatch_log_group_arn = aws_cloudwatch_log_group.this.arn
+    log_type                 = "SEARCH_SLOW_LOGS, ES_APPLICATION_LOGS"
   }
 
   tags = {
